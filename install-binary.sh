@@ -3,7 +3,7 @@
 # borrowed from https://github.com/technosophos/helm-template
 
 PROJECT_NAME="helm-unittest"
-PROJECT_GH="cf-stratos/$PROJECT_NAME"
+PROJECT_GH="cf-stratos/${PROJECT_NAME}"
 
 : ${HELM_PLUGIN_PATH:="$(helm home)/plugins/helm-unittest"}
 
@@ -66,16 +66,18 @@ verifySupported() {
 # getDownloadURL checks the latest available version.
 getDownloadURL() {
   # Use the GitHub API to find the latest version for this project.
-  local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/latest"
+  local latest_url="https://api.github.com/repos/${PROJECT_GH}/releases/latest"
   local version=$(git describe --tags --exact-match 2>/dev/null)
   if [ -n "$version" ]; then
-    latest_url="https://api.github.com/repos/$PROJECT_GH/releases/tags/$version"
+    latest_url="https://api.github.com/repos/${PROJECT_GH}/releases/tags/$version"
   fi
+  echo "Determining Download URL using: ${latest_url}"
   if type "curl" >/dev/null 2>&1; then
     DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
   elif type "wget" >/dev/null 2>&1; then
     DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
   fi
+  echo "Download URL: ${DOWNLOAD_URL}"
 }
 
 # downloadFile downloads the latest binary package and also the checksum
