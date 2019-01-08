@@ -66,7 +66,7 @@ verifySupported() {
 # getDownloadURL checks the latest available version.
 getDownloadURL() {
   # Don't use the GitHub API - as we hit rate-limiting
-  local version=$(git describe --tags --exact-match 2>/dev/null)
+  local version=$(cat plugin.yaml | grep version |  egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
   if [ -z "$version" ]; then
     echo "Can not determine version"
     exit 1
