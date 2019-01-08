@@ -4,6 +4,7 @@
 
 PROJECT_NAME="helm-unittest"
 PROJECT_GH="cf-stratos/${PROJECT_NAME}"
+#VERSION="0.1.3"
 
 : ${HELM_PLUGIN_PATH:="$(helm home)/plugins/helm-unittest"}
 
@@ -65,8 +66,11 @@ verifySupported() {
 
 # getDownloadURL checks the latest available version.
 getDownloadURL() {
+  echo "Plugin dir: ${HELM_PLUGIN_DIR}"
+  ls -al ${HELM_PLUGIN_DIR}
+
   # Don't use the GitHub API - as we hit rate-limiting
-  local version=$(cat plugin.yaml | grep version |  egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
+  local version=$(cat ${HELM_PLUGIN_DIR}/plugin.yaml | grep version |  egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
   if [ -z "$version" ]; then
     echo "Can not determine version"
     exit 1
