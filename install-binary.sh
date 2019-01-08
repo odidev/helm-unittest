@@ -65,18 +65,15 @@ verifySupported() {
 
 # getDownloadURL checks the latest available version.
 getDownloadURL() {
-  # Use the GitHub API to find the latest version for this project.
-  local latest_url="https://api.github.com/repos/${PROJECT_GH}/releases/latest"
+  # Don't use the GitHub API - as we hit rate-limiting
   local version=$(git describe --tags --exact-match 2>/dev/null)
-  if [ -n "$version" ]; then
-    latest_url="https://api.github.com/repos/${PROJECT_GH}/releases/tags/$version"
+  if [ -z "$version" ]; then
+    echo "Can not determine version"
+    exit 1
   fi
-  echo "Determining Download URL using: ${latest_url}"
-  if type "curl" >/dev/null 2>&1; then
-    DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
-  elif type "wget" >/dev/null 2>&1; then
-    DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
-  fi
+
+  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/${$PROJECT_NAME}/releases/download/${version}/${$PROJECT_NAME}-${OS}-${version}.tgz"
+  echo "Version: ${version}"
   echo "Download URL: ${DOWNLOAD_URL}"
 }
 
