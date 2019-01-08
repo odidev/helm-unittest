@@ -4,7 +4,6 @@
 
 PROJECT_NAME="helm-unittest"
 PROJECT_GH="cf-stratos/${PROJECT_NAME}"
-#VERSION="0.1.3"
 
 : ${HELM_PLUGIN_PATH:="$(helm home)/plugins/helm-unittest"}
 
@@ -75,9 +74,8 @@ getDownloadURL() {
     echo "Can not determine version"
     exit 1
   fi
-
-  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/${$PROJECT_NAME}/releases/download/${version}/${$PROJECT_NAME}-${OS}-${version}.tgz"
   echo "Version: ${version}"
+  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/${PROJECT_NAME}/releases/download/${version}/${PROJECT_NAME}-${OS}-${version}.tgz"
   echo "Download URL: ${DOWNLOAD_URL}"
 }
 
