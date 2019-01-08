@@ -75,7 +75,7 @@ getDownloadURL() {
     exit 1
   fi
   echo "Version: ${version}"
-  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/${PROJECT_NAME}/releases/download/${version}/${PROJECT_NAME}-${OS}-${version}.tgz"
+  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/releases/download/${version}/${PROJECT_NAME}-${OS}-${version}.tgz"
   echo "Download URL: ${DOWNLOAD_URL}"
 }
 
