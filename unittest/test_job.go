@@ -53,8 +53,8 @@ type TestJob struct {
 	Capabilities struct {
 		APIVersions []string
 		// KubeVersion is the Kubernetes version.
-		KubeVersion KubeVersion
-	}
+		KubeVersion KubeVersion `yaml:"kubeVersion"`
+	} `yaml:"capabilities"`
 	// route indicate which chart in the dependency hierarchy
 	// like "parant-chart", "parent-charts/charts/child-chart"
 	chartRoute string
@@ -195,7 +195,7 @@ func (t *TestJob) capabilityOption() *chartutil.Capabilities {
 	}
 
 	if len(t.Capabilities.KubeVersion.Minor) > 0 {
-		options.KubeVersion.Major = t.Capabilities.KubeVersion.Minor
+		options.KubeVersion.Minor = t.Capabilities.KubeVersion.Minor
 	}
 
 	return &options
