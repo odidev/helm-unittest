@@ -31,6 +31,13 @@ func (s *orderedSnapshotComparer) CompareToSnapshot(content interface{}) *snapsh
 	return s.cache.Compare(s.test, s.counter, content)
 }
 
+// KubeVersion is the Kubernetes version.
+type KubeVersion struct {
+	Version string // Kubernetes version
+	Major   string // Kubernetes major version
+	Minor   string // Kubernetes minor version
+}
+
 // TestJob defintion of a test, including values and assertions
 type TestJob struct {
 	Name       string `yaml:"it"`
@@ -42,6 +49,11 @@ type TestJob struct {
 		Namespace string
 		Revision  int
 		IsUpgrade bool
+	}
+	Capabilities struct {
+		APIVersions []string
+		// KubeVersion is the Kubernetes version.
+		KubeVersion KubeVersion
 	}
 	// route indicate which chart in the dependency hierarchy
 	// like "parant-chart", "parent-charts/charts/child-chart"
@@ -130,8 +142,9 @@ func (t *TestJob) getUserValues() ([]byte, error) {
 func (t *TestJob) renderChart(targetChart *chart.Chart, userValues []byte) (map[string]string, error) {
 	config := &chart.Config{Raw: string(userValues), Values: map[string]*chart.Value{}}
 	options := *t.releaseOption()
+	caps := *t.capabilityOption()
 
-	vals, err := chartutil.ToRenderValues(targetChart, config, options)
+	vals, err := chartutil.ToRenderValuesCaps(targetChart, config, options, &caps)
 	if err != nil {
 		return nil, err
 	}
@@ -161,6 +174,30 @@ func (t *TestJob) releaseOption() *chartutil.ReleaseOptions {
 	if t.Release.Namespace != "" {
 		options.Namespace = t.Release.Namespace
 	}
+	return &options
+}
+
+// get chartutil.CapabilityOptions ready for render
+// Only supports APIVersions for now
+func (t *TestJob) capabilityOption() *chartutil.Capabilities {
+	options := chartutil.Capabilities{
+		APIVersions: chartutil.DefaultVersionSet,
+		KubeVersion: chartutil.DefaultKubeVersion,
+	}
+	if len(t.Capabilities.APIVersions) > 0 {
+		var arr []string
+		arr = append(t.Capabilities.APIVersions, "v1")
+		options.APIVersions = chartutil.NewVersionSet(arr...)
+	}
+
+	if len(t.Capabilities.KubeVersion.Major) > 0 {
+		options.KubeVersion.Major = t.Capabilities.KubeVersion.Major
+	}
+
+	if len(t.Capabilities.KubeVersion.Minor) > 0 {
+		options.KubeVersion.Major = t.Capabilities.KubeVersion.Minor
+	}
+
 	return &options
 }
 
