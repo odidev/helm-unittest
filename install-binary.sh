@@ -51,7 +51,7 @@ initOS() {
 # verifySupported checks that the os/arch combination is supported for
 # binary builds.
 verifySupported() {
-  local supported="linux-amd64\nmacos-amd64\nwindows-amd64"
+  local supported="linux-arm64\nlinux-amd64\nmacos-amd64\nwindows-amd64"
   if ! echo "${supported}" | grep -q "${OS}-${ARCH}"; then
     echo "No prebuild binary for ${OS}-${ARCH}."
     exit 1
@@ -75,7 +75,9 @@ getDownloadURL() {
     exit 1
   fi
   echo "Version: ${version}"
-  DOWNLOAD_URL="https://github.com/${PROJECT_GH}/releases/download/${version}/${PROJECT_NAME}-${OS}-${version}.tgz"
+  if [ `uname -m` == "aarch64" ] ; then DOWNLOAD_URL="https://github.com/${PROJECT_GH}/releases/download/${version}/${PROJECT_NAME}-${OS}-arm64-${version}.tgz";
+  else DOWNLOAD_URL="https://github.com/${PROJECT_GH}/releases/download/${version}/${PROJECT_NAME}-${OS}-${version}.tgz";
+  fi
   echo "Download URL: ${DOWNLOAD_URL}"
 }
 
